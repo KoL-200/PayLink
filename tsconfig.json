@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig.json",
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
@@ -8,7 +9,9 @@
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
     "target": "es2022",
-    "types": [],
+    "types": [
+      "node"
+    ],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
@@ -30,14 +33,14 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "esModuleInterop": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
   "include": [
     "src"
-  ],
+  ]
 }
