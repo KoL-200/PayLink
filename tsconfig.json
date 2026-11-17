@@ -41,6 +41,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "src"
+    "src",
+    "src/config/server.ts",
+    "src/config/server.ts"
   ]
 }
