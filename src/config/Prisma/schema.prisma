@@ -1,0 +1,168 @@
+generator client {
+    provider     = "prisma-client"
+    output       = "../src/generated/prisma"
+    moduleFormat = "cjs"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+// ENUM
+enum Role {
+    OWNER
+    ADMIN
+    VIEWER
+}
+
+enum InvoiceStatus {
+    DRAFT
+    SENT
+    PENDING
+    PAID
+    FAILED
+    EXPIRED
+    CANCELLED
+}
+
+enum PaymentMethod {
+    PROVIDER //Bachs
+    BANK_TRANSFER
+}
+
+enum PaymentStatus {
+    PENDING
+    SUCCESS
+    FAILED
+    ABANDONED
+}
+
+enum PaymentProvider {
+    BACHS
+}
+
+// MODEL
+model User {
+    id         String            @id @default(cuid())
+    email      String            @unique
+    password   String
+    name       String?
+    workspaces WorkspaceMember[]
+    createdAt  DateTime          @default(now())
+    updatedAt  DateTime          @updatedAt
+}
+
+model Workspace {
+    id           String            @id @default(cuid())
+    name         String
+    members      WorkspaceMember[]
+    customers    Customer[]
+    bankAccounts BankAccount[]
+    invoices     Invoice[]
+    createdAt    DateTime          @default(now())
+    updatedAt    DateTime          @updatedAt
+}
+
+model WorkspaceMember {
+    id          String    @id @default(cuid())
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id])
+    userId      String
+    user        User      @relation(fields: [userId], references: [id])
+    role        Role      @default(OWNER)
+
+    @@unique([workspaceId, userId])
+}
+
+model Customer {
+    id          String    @id @default(cuid())
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id])
+    name        String
+    email       String?
+    phone       String?
+    invoices    Invoice[]
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    @@unique([workspaceId])
+}
+
+model BankAccount {
+    id            String    @id @default(cuid())
+    workspaceId   String
+    workspace     Workspace @relation(fields: [workspaceId], references: [id])
+    bankName      String
+    accountNumber String
+    accountName   String
+    isDefault     Boolean   @default(false)
+    createdAt     DateTime  @default(now())
+    updateAt      DateTime  @updatedAt
+
+    @@unique([workspaceId])
+}
+
+model Invoice {
+    id          String    @id @default(cuid())
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id])
+    customerId  String?
+    customer    Customer? @relation(fields: [customerId], references: [id])
+
+    number      String
+    title       String?
+    description String?
+    amount      Decimal       @db.Decimal(18, 2)
+    currency    String        @default("NGN")
+    status      InvoiceStatus @default(DRAFT)
+    duedate     DateTime?
+
+    paymentMethod    PaymentMethod @default(PROVIDER)
+    bankAccountId    String?
+    paymentReference String? // for direct bank transfer
+    paymentLink      String? //for Bachs checkout
+
+    provider    PaymentProvider?
+    providerRef String?
+    paidAt      DateTime?
+    paidNote    String?
+
+    payments  Payment[]
+    deletedAt DateTime?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+
+    @@unique([workspaceId, number])
+    @@index([workspaceId, status])
+    @@index([workspaceId, duedate])
+}
+
+model Payment {
+    id          String          @id @default(cuid())
+    invoiceId   String
+    invoice     Invoice         @relation(fields: [invoiceId], references: [id])
+    amount      Decimal         @db.Decimal(18, 2)
+    currency    String
+    status      PaymentStatus   @default(PENDING)
+    provider    PaymentProvider
+    providerRef String
+    rawPayload  Json?
+    paidAt      DateTime?
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+
+    @@unique([provider, providerRef])
+    @@index([invoiceId])
+}
+
+model WebhookEvent {
+    id        String          @id @default(cuid())
+    provider  PaymentProvider
+    eventId   String
+    eventType String
+    payload   Json
+    processed Boolean         @default(false)
+    createdAt DateTime        @default(now())
+
+    @@unique([provider, eventId])
+}
