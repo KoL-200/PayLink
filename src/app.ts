@@ -2,6 +2,10 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { notFoundHandler, errorHandler } from './common/middleware/error-handler';
+import { prisma } from './config/prisma';
+
+// auth
+import { authRoutes } from './features/auth';
 
 const app: Express = express();
 
@@ -13,7 +17,14 @@ app.get('/health', (_req, res) => {
     res.json({ success: true, status: 'ok', uptime: process.uptime() })
 });
 
+// DB health check
+app.get('/health/db', async (_req, res) => {
+    await prisma.$queryRaw` SELECT 1`;
+    res.json({ success: true, db: 'connected' })
+})
+
 // other routes will be mounted
+app.use('/auth', authRoutes)
 
 app.use(notFoundHandler);
 app.use(errorHandler);

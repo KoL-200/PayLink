@@ -1,7 +1,16 @@
 import app from './app';
 import { env } from './config/env';
+import { prisma } from './config/prisma';
 
-app.listen(env.PORT, () => {
+const server = app.listen(env.PORT, () => {
     console.log(`PayLink API running on port ${env.PORT} (${env.NODE_ENV})`);
-
 });
+
+const shutdown = async () => {
+    server.close();
+    await prisma.$disconnect();
+    process.exit(0)
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown)
