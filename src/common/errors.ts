@@ -51,8 +51,8 @@ export class NotFoundError extends AppError {
     }
 }
 
-export class ConfluictError extends AppError {
-    constructor(message = 'Coinflict') {
+export class ConflictError extends AppError {
+    constructor(message = 'Conflict') {
         super(
             409,
             message,
