@@ -22,4 +22,4 @@ export const requireWorkspaceAccess =
 
             req.workspace = { id: workspaceId, role: membership.role };
             next();
-        }
+        };
