@@ -10,6 +10,9 @@ import { authRoutes } from './features/auth';
 // workspaces
 import { workspaceRoutes } from './features/workspaces';
 
+// customers
+import { customerRoutes } from './features/customers';
+
 const app: Express = express();
 
 app.use(helmet());
@@ -29,6 +32,7 @@ app.get('/health/db', async (_req, res) => {
 // other routes will be mounted
 app.use('/auth', authRoutes);
 app.use('/workspace', workspaceRoutes);
+app.use('workspaces/:id/customers', customerRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
