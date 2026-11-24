@@ -111,6 +111,7 @@ model BankAccount {
     isDefault     Boolean   @default(false)
     createdAt     DateTime  @default(now())
     updateAt      DateTime  @updatedAt
+    deletedAt     DateTime?
 
     @@unique([workspaceId])
 }
