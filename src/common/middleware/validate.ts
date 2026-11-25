@@ -6,7 +6,7 @@ type Source = 'body' | 'query' | 'params';
 
 export const validate =
     (schema: ZodTypeAny, source: Source = 'body') =>
-        (req: Request, _res: Response, next: NextFunction) => {
+        (req: Request, res: Response, next: NextFunction) => {
             const result = schema.safeParse(req[source]);
 
             if (!result.success) {
@@ -16,5 +16,6 @@ export const validate =
             }
 
             if (source === 'body') req.body = result.data;
+            else res.locals[source] = result.data;
             next();
         };
