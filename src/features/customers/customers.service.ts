@@ -1,8 +1,15 @@
 import { prisma } from '../../config/prisma';
 import type { CreateCustomerInput, ListCustomersQuery } from './customers.validation';
 
-export function createCustomer(workspaceId: string, input: CreateCustomerInput | any) {
-    return prisma.customer.create({ data: { workspaceId, ...input } });
+export function createCustomer(workspaceId: string, input: CreateCustomerInput) {
+    return prisma.customer.create({
+        data: {
+            workspaceId,
+            name: input.name,
+            ...(input.email !== undefined ? { email: input.email } : {}),
+            ...(input.phone !== undefined ? { phone: input.phone } : {}),
+        },
+    });
 }
 
 export async function listCustomers(workspaceId: string, q: ListCustomersQuery) {

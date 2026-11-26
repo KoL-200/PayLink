@@ -19,7 +19,7 @@ router.post(
 router.get(
     '/',
     requireWorkspaceAccess(),
-    validate(listCustomersQuerySchema),
+    validate(listCustomersQuerySchema, 'query'),
     controller.list
 );
 
