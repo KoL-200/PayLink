@@ -66,14 +66,15 @@ model RefreshToken {
 }
 
 model Workspace {
-    id           String            @id @default(cuid())
-    name         String
-    members      WorkspaceMember[]
-    customers    Customer[]
-    bankAccounts BankAccount[]
-    invoices     Invoice[]
-    createdAt    DateTime          @default(now())
-    updatedAt    DateTime          @updatedAt
+    id             String            @id @default(cuid())
+    name           String
+    members        WorkspaceMember[]
+    customers      Customer[]
+    bankAccounts   BankAccount[]
+    invoices       Invoice[]
+    invoiceCounter Int               @default(0)
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime          @updatedAt
 }
 
 model WorkspaceMember {
@@ -97,8 +98,6 @@ model Customer {
     invoices    Invoice[]
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
-
-    @@unique([workspaceId])
 }
 
 model BankAccount {
@@ -111,8 +110,8 @@ model BankAccount {
     isDefault     Boolean   @default(false)
     createdAt     DateTime  @default(now())
     updateAt      DateTime  @updatedAt
-
-    @@unique([workspaceId])
+    deletedAt     DateTime?
+    invoices      Invoice[]
 }
 
 model Invoice {
@@ -132,6 +131,7 @@ model Invoice {
 
     paymentMethod    PaymentMethod @default(PROVIDER)
     bankAccountId    String?
+    bankAccount      BankAccount?  @relation(fields: [bankAccountId], references: [id])
     paymentReference String? // for direct bank transfer
     paymentLink      String? //for Bachs checkout
 

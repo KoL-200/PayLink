@@ -13,6 +13,12 @@ import { workspaceRoutes } from './features/workspaces';
 // customers
 import { customerRoutes } from './features/customers';
 
+// bank-accounts
+import { bankAccountRoutes } from './features/bank-accounts';
+
+// invoices
+import { invoiceRoutes } from './features/invoices';
+
 const app: Express = express();
 
 app.use(helmet());
@@ -31,8 +37,10 @@ app.get('/health/db', async (_req, res) => {
 
 // other routes will be mounted
 app.use('/auth', authRoutes);
-app.use('/workspace', workspaceRoutes);
-app.use('workspaces/:id/customers', customerRoutes);
+app.use('/workspaces', workspaceRoutes);
+app.use('/workspaces/:id/customers', customerRoutes);
+app.use('/workspaces/:id/bank-accounts', bankAccountRoutes);
+app.use('/workspaces/:id/invoices', invoiceRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
