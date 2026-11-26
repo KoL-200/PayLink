@@ -9,6 +9,6 @@ export async function create(req: Request, res: Response) {
 
 export async function list(req: Request, res: Response) {
     const query = res.locals.query as ListCustomersQuery;
-    const { items, meta } = await customersService.listCustomers(req.workspace!.id, req.body);
+    const { items, meta } = await customersService.listCustomers(req.workspace!.id, query);
     res.json({ success: true, data: items, meta });
 }
