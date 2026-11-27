@@ -39,6 +39,7 @@ enum PaymentStatus {
 
 enum PaymentProvider {
     BACHS
+    MANUAL
 }
 
 // MODEL
